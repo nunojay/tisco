@@ -11,9 +11,9 @@ I'm releasing the source code, as is. It was compiled with DJGPP.
 I developed compiler because all other compielers I tried generated very bloated code.
 On top of that I ended up adding support for a DLL system.
 
-More information on tisco.txt under doc/ .
+More information in https://github.com/nunojay/tisco/blob/master/doc/TISCO.txt .
 
 May it be of any use to anyone.
 
-Nuno João
+Nuno João<br/>
 April 2020
