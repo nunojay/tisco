@@ -1,0 +1,962 @@
+
+
+                 TISCO v0.0 - TI Simple C Compiler
+
+                      by Nuno Joao aka Viriato
+
+
+
+  BETA-TESTERS NOTE
+   Hello there!
+   Thanks for beeing testing this.
+   Well, this is going to be the final documentation. I included
+   some notes for you, wich won't appear in the final version.
+   These notes will say NTBT - Note to Beta Testers, and will be
+   between []'s (you'll see them).
+   TISCO has bugs and will have after the first (and who knows
+   only) release. I count on you to find out at least some of
+   the more 'screaming' ones. I count on you also to give me
+   suggestions, of ANY kind you feel like. I would specially like
+   you to tell me 3 things (instructions or facilities) you have
+   'missed' the most, or you think it would be very usefull.
+   I already know of a bug related to calculating expressions
+   in the form
+
+    a op k + b op j,  a or k are 16bit vars and b or j are 8bit
+                      vars and op are high priority operations
+
+   The 8 bit var is operated with a high priority operator and is
+   on the rigth side of the expression. It's annoying because it
+   will generate incorrect code without leting us know. This is
+   the only serious bug I found so far and I'm already hunting him.
+   If you enconter bugs in the code generated, you should send me
+   an excert of the *.asm file. TISCO always generates as a comment
+   the C line that originated a portion of code so, that's enough
+   to send me the that line a the next ones (the ones that have
+   the assmebly code) until the next C commented line. You sould
+   also include the types of the variables involved, and any
+   other information you see necessary to the total compreension
+   of the C code (like if it where a DLL or a normal application).
+   Also, try to send me the simplest code you can find that makes
+   the bug show it's head.   
+   If you have any question, just contact me at nupsnover@gmail.com
+   And of course, don't release it to any one. You can show it
+   to your friends but don't let TISCO go out your computer. It
+   might have unecessary bugs.
+   I hope it will be released very soon. I should have it released
+   1 month ago, but I was never satisfyied... so I keep on making
+   improvements (like DLLs). But now this has to stop, or I will
+   be improving it endlessly. So, make your tests, take the time
+   you feel like/have/neeed and send me your 'report'. After that
+   I'll try to fix the bugs, maybe all, maybe some, and TISCO v0.0
+   willl come out.
+   Try out the simple programs without DLLs first, to get used to
+   thinghs. The go up.
+   Good luck and once more thank you for your cooperation. I'll
+   mention your names in the release version.
+   Oh, bu the way, I count on your TOTAL sincerity. If it stinks,
+   it stinks, I hope you'll tell me.
+
+
+  PREFACE...
+   Well, I spent my free time on the last 3 or 4 months hacking
+   this very very simple C compiler for the TI. I did it mainly
+   for my calc, a TI-86, but it can be used to program to other
+   calcs.
+
+  [NTBT: just testing :)...]
+
+   Once I donwloaded a C compiler for TI-86, but I got very very
+   disapointed with the quality (mainly size) of the code
+   generated. So, I decided to make my self a C compiler with a
+   resonable generated code.
+   I'll try to describe what TISCO can and can't do in the rest
+   of this text. Sorry for my probably *bad* english.
+   I would like to receive feedback about TISCO. Is it worth to
+   continue to improve it? Do you use it? What could be improved
+   (lots of things I know, but tell me anyway)? Bugs? And the
+   like.
+   To finalize this preface, I just wanted to thanks Alan Bailey
+   for granting me his permission to include prgm86.exe in this
+   package.
+
+
+  LEGAL STUFF
+   This software is provided as is without any guarantees or
+   warranty. Although the author have attempted to find and
+   correct any bugs in the package, they are not responsible
+   for any damage or losses of any kind caused by the use or
+   misuse of the package. The author are under no obligation
+   to provide service, corrections, or upgrades to this package.
+
+   This program is FREEWARE. You can redistribute the ZIP file
+   that contains this program to any one, as long as the ZIP
+   file isn't altered in any form, and there is no charge of
+   any kind for it.
+   You can modify it as you please as long as it is for your
+   personnal use only.
+   You can modify it or include parts of it with other packages
+   and redistribute it, as long as I'm credited somewhere where
+   any one who use your package can clearly see it. The credits
+   must include the my name (Nuno Joao) and my email address
+   (xxxxxxxxxx). If those parts include any file
+   not copyright by me, it must also include the name of the
+   respective author (see next paragraph).
+
+   Anything not created by TI, Speech Technologies (TASM), and
+   the file prgm86.exe taken from ASM86 by Alan Bailey
+   (bailela@charlie.cns.iit.edu; with his permission) are
+   Copyright (c) Nuno Joao 1998.
+
+   Ok, now let's go to the interesting stuff.
+
+
+  INSTALATION
+   Just unzip the file with the -d option. It will create a
+   tree directory named TISCO with all the stuff inside:
+
+     TISCO\              Has this file (TISCO.TXT)
+       |
+       +---> INCLUDE\    Include files for TI-86
+       |
+       +---> EXAMPLES\   Example programs
+       |
+       +---> BIN\        Binarys
+       |
+       +---> CODE\       A place for you to put your programs
+
+   For your commodity you should add TISCO\BIN to the path,
+   adding the following line to the end of your autoexec.bat
+   (assuming TISCO is at the root of drive C:):
+
+      path %path%;c:\TISCO\BIN
+
+   You can also do this by running the BAT file SETPATH (BIN\)
+   and giving it as a parameter TISCO's directory. This command
+   however is only temporary (it doesn't change your AUTOEXEC.BAT).
+   The BIN directory contains a file named z80asm.exe wich is
+   tasm. I renamed it because of name conflits with turbo
+   assembler.
+
+
+  TISCO - THE SIMPLE C COMPILER
+   TISCO implements a small set of C, with a few restrictions,
+   but I think we still can do a lot with it. It produces a code
+   fairly reasonable. It's far from good, but it's reasonable,
+   just give it a chance and see it by your self.
+
+   TISCO generates an *.asm file for assembling with TASM, the
+   Table Assembler (by Speech Technologies). The ZIP also
+   includes the include files needed for making programs for the
+   TI-86. Some are the standard files from TI.
+   There are also some include files in C for the TI-86, which
+   implement some library routines. I won't make versions of them
+   for other calcs because I only have access to a TI-86, but
+   anyone is free to do that, of course (these include files are
+   to be included in the C sources).
+
+
+  USAGE
+   TISCO is a DOS program (but it runs fine under windows), so
+   to compile my_prog.c you just type in at the command prompt
+
+       ..\>tisco my_prog.c
+
+   which, if there's no errors, will produce my_prog.asm,
+   my_prog.lst and my_prog.86p. There are some options you can
+   give it, after the name of your *.c file:
+
+       -s   Shows some statistics, like the total memory used
+       -ox  Optimization level. x is 0, 1 or 2, meaning
+            'no optimization', 'optimize a bit' and 'give me
+            all you got'. By default -o2 is turned on.
+            [NTBT: I don't know why I put these. -o2 is always
+               so much better. I guess I just wanted to have
+               an option of this kind :)...]
+       -jx  Type of generated jumps, where 'x' is 'r' for
+            relative (jr) or 'a' for absolute (jp). Relative
+            jumps are one byte smaller, but they can only be
+            used to jump within a 256 bytes range, 128 back and
+            127 forward. By default 'r' is on. If a jump goes
+            out of his range, you will only know that by TASM.
+            'x' can be 'o' too. Choosing this, it will use
+            absolute jumps for 'return' statments relative jumps
+            with the other ones. Many times we can get out of
+            a function with a return. Imagine this:
+                 void f (char a)  {
+                    if (a == 0)  {
+                       ... lots of code ...
+                    }
+                 }
+            This can make a relative jump for 'if' inadequate,
+            and will force you to use absolute jumps averywhere.
+            But you can use '-jo' and write
+                 void f (char a)  {
+                    if (a != 0)  return;
+                    ... lots of code ...
+                 }
+    -i<dir> Gives the default include's directory. If it's not
+            given, TISCO will assume there's a "..\include"
+            directory relative to TISCO's BIN\ directory.
+            First, TISCO will try to open the file just as it is
+            in the #include directive. If it is unsucessfull
+            then it trys the default include directory.
+       -d   Compile a DLL (see later).
+       -p   Compile a simple program. It will not have stack,
+            you can't use DLLs, functions can't have arguments or
+            local variables. The code generated doesn't do any
+            initialization. The first function in the file must be
+            the starting.
+            This can be used to make small programs, relying
+            mainly on asm. Be aware that TISCO will not check
+            if you are respecting all the restrictions.
+            Example of generated code:
+
+              C code:                      Assembly code:
+
+               char  a, b;                  _main:
+               void main ()   {                 ld   a, (_b)
+                 a = b;                         ld   (_a), a
+               }                                ret
+                                            _a: .db 0
+                                            _b: .db 0
+
+            If you want other functions you must always keep your
+            start function as the first function in the file, and
+            remember that include files can have functions.
+
+
+   Here are some examples:
+
+       ..\>tisco hello.c
+          compiles hello.c to hello.asm
+       ..\>tisco hello.c -o1 -s
+          compiles hello.c, showing some statistics and
+          generating level 1 quality code
+       ..\>tisco hello.c -ja -o0
+          compiles hello.c with no optimization at all and
+          forcing the use of absolute jumps
+       ..\>tisco dll.c -d -i\includes
+          compiles dll.c to a DLL, full optimization,
+          default include's directory is "\includes".
+
+   As you will see, -o0 gives very bad code (not as bad as the
+   C compiler I tried once). Usually, -o2 generates less than
+   75% of the code generated with -o0. Of course, -o2 takes more
+   time than -o0.
+
+   The program tisco.exe is just a launcher of other programs.
+   First it launchs tisco00.exe, the compiler, wich produces the
+   *.asm file. Then it launchs tasm to produce an *.obj file and
+   a *.lst file. Then it launchs prgm86.exe to create the *.86p
+   file. In the middle it makes some file copying, renaming and
+   erasing, so that all the generated files end up in the same
+   directory than the C source file.
+
+  [NTBT: this was necessary because I couldn't make TASM
+      assemble a file in other directory rather than the one
+      in which TASM is in. If you ever find an *.asm or *.lst
+      file in your BIN directory don't be surprised; if the
+      compiler crashed or launcher crashed bad it might have
+      left one or two files in BIN\]
+
+   To compile an example just goto the EXAMPLES directory and
+   run (assuming TISCO\BIN is already on the path)
+         $\>tisco <filename.c>
+
+
+  THE PREPROCESSOR
+   TISCO suports:
+
+       #include "filename"
+       #define name
+       #undef name
+       #ifdef name
+       #ifndef name
+       #endif
+       #error "message"
+
+   The only way to have more than one source file is to use
+   include files. So, some include files here are a concept a bit
+   diferent from 'true' C include files. To make the diference,
+   I give these include files with extension 'INC' instead of 
+   'H'. You can put an #include anywhere in your source file and
+   includes can nest until about 8 files.
+  [NTBT: do you think it's enough, 8 file nesting?]
+   Due to the way the preproc. is made, it's used words without
+   '#' (define, include, ...) are reserved words, and can't be
+   used elsewhere.
+   Only macros without parameters are suported, and you can't
+   use 'asm block' constructs in them, because of the way I
+   implemented them. Use the alternative 'asm line' form. Asm
+   code isn't searched for macros (more about asm later in this
+   text).
+   You can use '\' to expand the body of a macro trough several
+   lines, like in a real C preprocessor.
+
+
+  THE SIMPLE C SINTAX AND SEMANTICS
+   TISCO does very litle about type checking. It doesn't have
+   type casts.
+   Comments can be C style (/*...*/) or C++ style (//...).
+   Lets take a look at the suported language.
+
+   A PROGRAM
+   A program consists of type definitions, variable and DLL
+   declarations, functions and functions prototypes. Variables
+   can be declared external, meaning that they will not be
+   defined in C, or by TISCO (like the variables declared in TI
+   include files for asm).
+   Function prototypes are used in two ways: advanced declaration
+   so that you can use it before it's implementation and to
+   acess external functions, like the functions defined in TI's
+   asm include files.
+
+   TYPE DEFINITION
+   There are 5 basic types: char, uchar (unsigned char), int, 
+   uint (unsigned int) and void. void is used only in functions,
+   when you don't want to return nothing. You can have pointers to
+   these or any other types you define. You can have structures
+   also.
+   Right now TISCO only suports unsigned 8 and 16 bit numbers.
+   Types 'char' and 'int' exist, but are treated like 'uchar'
+   and 'uint'. I recomend not using char and int instead of
+   uchar and uint for future compatibility reasons.
+
+   A type definition starts with the 'typedef' keyword. You can
+   define types as in C, but with restrictions. You can't define
+   pointers to functions. You can't use parentesis.
+   Here are the allowed forms and some examples:
+
+      typedef <type> <*...> <newtype>;
+      typedef <type> <newtype> <[exprk]>
+      typedef struct <newtype> {
+         <fields, like in the other 3 forms but without typedef>
+      }
+
+      A  typedef uchar  byte;
+      B  typedef uchar  *tcptr;
+      C  typedef uchar  ***cptr3;
+      D  typedef byte   TBA[20];
+      E  typedef TBA    screen[20];
+      F  typedef tcptr  cparray[10];
+      G  typedef uchar  carray[3 * 2 - 1 | 5];
+      H  typedef struct TPOINT {
+             byte   x, y;
+             uchar  color;
+             byte   name[20];
+             byte   *px, py[4];
+         }
+
+   exprk is a constant expression. <*...> represents 0 or more
+   asteriscs.
+   You can't mix '*' with arraying in the definition of types,
+   but you can overcome that by using an intermediate type, like
+   example F, which is an array of pointers. Similarly, you make
+   multidimensional arrays using intermediate types, like in E.
+   Note that structures do not end with a ';'.
+
+
+   VARIABLE DECLARATIONS
+   Variables can be local (inside functions) or global (outside
+   functions). The sintax declaration folows the declaration of
+   structure's fields. The rules apply equally.
+   There is a keyword you can use to declare external variables:
+   extern. The extern keyword must prefix the declaration. The
+   diference between external and normal (internal) variables is
+   that TISCO does not allocate any space for them; it assumes
+   they are declared else where. External variables are always 
+   global variables. I use them to acess variables declared, for
+   example, in TI include files. Example:
+
+       extern  uchar curRow;
+
+   Internally to TISCO all begin with an '_' (underscore). So, in
+   the compiled code, 'curRow' will appear as '_curRow.
+
+  [NTBT: prefixing wich identifier with '_' makes it much more
+      easy to destinguish an identifier from other thing, when
+      compiling]
+
+   External variables must be global.
+   All global variables are initially 'zeroed'.
+   You can't initialize variables in the declaration.
+
+
+   FUNCTIONS
+   Functions must have a type, that can only be a type who is 8
+   or 16 bit wide, or void. Note that pointers are 16 bit wide,
+   so you can return pointers.
+   Arguments to functions are even more restricted. They can only
+   be types 8/16 bit wide or pointers to any type. Not respecting
+   this, TISCO generates invalid code.
+   Functions not used are not included in the final code, to save
+   space. TISCO will even browse the "asm {...}" sections for the
+   use of functions. If you want some function to appear in the
+   final code, even not beeing directly called, you can use the
+   keyword 'force' after the function's argument list, like
+
+       void my_fn (..) force { ... }
+
+   If a function has an empty body, it will not be generated,
+   unless you 'force' it to.
+   In DLLs all exported functions are included (see more about
+   DLLs later).
+   Functions can be recursive, but be aware: an 'artificial'
+   stack is used to hold local variables and arguments of
+   functions; the stack grows up from the end of the program, so,
+   if it grows too much, beyhond the area reserved for asm
+   programs, the calculator will probably crash, without any
+   warning. There's another limit which is the space for the true
+   machine stack.
+   Local variables are declared at the begining of the function,
+   and can't be declared at the begining of any block ('{..}').
+   The suported statments are:
+
+     Atributing:
+         <var> = expr;
+         <var>++;
+         <var>--;
+           From now on, expr is:
+             . string,  or
+             . &<var>, meaning 'address of variable <var>',  or
+             . an expression with constants, variables and
+               function calls. The suported operators are
+               +, -, *, /, %, &, ^, |, << and >> (all unsigned).
+           ++ and -- can only be used isolated.
+
+     Function call:
+         <fn>(argument_list) [force] [export <number>];
+           argument_list is a set of expr separated by ',',
+           or nothing.
+
+     If:
+         if (condition) statm
+         if (condition) statm else statm
+           From now on, condition is: 
+               . expr1 RelationalOperator expr2  or
+               . expr
+           RelationalOperator is one of ==, !=, >, >=, <, <=.
+           statm can be a statment or a block ('{...}').
+           So, conditions are restricted too. When you have
+           only an expression as a condition, it will be true
+           if expr != 0 and false otherwise (like in normal C).
+
+     If flags:
+         ifc/ifnc/ifz/ifnz statm
+         ifc/ifnc/ifz/ifnz statm else statm
+           These forms of if test the Z80 Carry and Zero flags.
+           They always generate relative jumps (jr).
+
+     While:
+         while (condition)  statm
+
+     For:
+         for (Atribution; condition; Atribution) statm
+           atrib is normal atributing. Any or all of Atribution
+           or condition may be missing. Minimal usage: for(;;);
+
+     Switching:
+         switch (expr-8bit) {
+             case 8bit-const : statm
+             case 8bit-const : statm
+             ...
+             [default : statm]
+         }
+         This works almost like the ordinary C switch. The
+         diference is that in a case statm you can only put
+         one instruction, or several but within '{..}'. break
+         is used to get out of the switch statment.
+
+     Break:
+         break;
+         Used as the usual break. Can be used only inside
+         loops or inside switch.
+
+     Return:
+         return expr;
+
+     Asm:
+         asm {
+            <anything you want...>    };
+         asm "one line with anything you want";
+           The 'asm {' must be in one line only, and alone.
+           inside the {} you can put whatever you want,
+           because the text will be copied literaly to the
+           output. So, remember: coments begin with an ';'
+           and go till the end of the line.
+           Assembler code cannot trash the ix register,
+           because it is the 'stack pointer' for function's
+           local variables and arguments. This form is called
+           an 'asm block'.
+
+         [NTBT: It's time to introduce you to TISCO parameter
+             passing and local variables mechanism.
+             At APP start, ix is set to point to the end of
+             the APP (including the end of all DLLs). From
+             there up grows a stack. ix always points to the
+             first 'available' byte of the stack. From here
+             upwards (ix +...), it's used to put arguments to
+             functions to be called. From ix-1 downwards there
+             are the parameters and local variables of the
+             caller function (the actual function) and the
+             functions that called them (their, lets say,
+             parents). So, we access local vars and parameters
+             using (ix-k), k > 0, and put parameters in the
+             stack using (ix+k), k <= 0.
+             When we enter a function that has parameters or
+             local vars or both, ix is incremented so we access
+             them by using (ix-k), and get the memory at (ix)
+             and up free for passing parameters to other
+             functions. At the end of the function, ix is
+             decremented again.
+             Ex (IC - instruction counter):
+
+               void sqr (uint a)  {
+                   char  aux;
+                   aux = a * a;
+                   return aux;
+               }
+
+               void main ()  {
+                   sqr(10);
+                   sqr(20);
+               }
+               
+
+               CODE              IX STACK            IX
+                                 <nothing>  <- ix    00 (example)
+
+               sqr(10);          <10>       <- ix    00
+
+               sqr function      <10>
+                                 <aux>
+                                 <nothing>  <- ix    02
+
+               aux = ...         <10>
+                                 <aux>
+                                 <nothing>  <- ix    02
+
+               end of sqr        <10>       <- ix    00
+
+               sqr(10);          <20>       <- ix    00
+               ...
+
+             And so on. Take a look at the code.]
+
+           The second form is a simpler form named an
+           'asm line', and can be used in macros, wich the
+           first form can't.
+           The second form should have only ONE instruction.
+
+     Get variables:
+         gete <var>;
+         getv <var>;
+           These 2 statments are auxiliar to assembler
+           programming. gete put the variable address into
+           hl. getv put the variable value (8 or 16 bit)
+           into a (8 bit) or hl (16 bit).
+
+     ; :
+         Empty instruction, like in: if (1);
+
+   Take a look at the code samples and includes included in the
+   ZIP for examples on all of this. It's the best way.
+   BE AWARE that TISCO doesn't always verify if you are
+   respecting all the restrictions. If you aren't, it can give an 
+   error/warning, it may crash (I tried to avoid this, but it's
+   possible; let me know) or it may generate incorrect code
+   without telling you nothing (but only if you don't respect the
+   sintax described here; well, it can have bugs...). As long as
+   you keep using simple forms of code you can go fine without
+   much trouble.
+
+
+   VARIABLES AND CONSTANTS
+   Variables can't be initialized in the declaration.
+   A variable must use '->' when dealing with pointers to
+   structures. BE AWARE: in TISCO, pointers != arrays, so you
+   can't use array subscripts ('[' and ']') in pointers. And if
+   you want an address of an array, you must use '&', like with
+   any other variable.
+   There are automatic casts in expressions and atributions. In
+   expressions, the smaller values will be casted to the bigger
+   ones. Let v8 be an 8 bit variable and v16 be an 16 bit
+   variable and op any binary aperation:
+
+          v8 op v16  ->  CASTTO16(v8) op v16
+          v16 op v8  ->  v16 op CASTTO16(v8)
+          v8 = v16   ->  v8 = LOWBYTE(v16)
+          v16 = v8   ->  LOWBYTE(v16) = v8, HIGHBYTE(v16) = 0
+
+   TISCO only directly manipulates unsigned 8bit and 16bit
+   values. If you try to load a variable which isn't an 8/16bit
+   value, TISCO will probably only see the first byte or word
+   at the variable's address.
+
+   A constant can be an integer in decimal, octal or
+   hexadecimal, or a caracter ('x'). In strings TISCO suports all
+   the special characteres suported by TASM (strings are passed 
+   'as they are' to TASM). In character constants TISCO doesn't
+   suport none of the special characteres. If you put '\' it will
+   mean character \. You can't use '\'' for the ', you must use
+   it's numerical value.
+
+
+   EXPRESSIONS
+   In TISCO all operations are left associative, as they should. 
+   '-expr' is implemented as '0 - expr'.
+
+
+  TISCO DLLs
+   When compiling with the -d option TISCO will generate a DLL.
+   A DLL allows the sharing of code, because DLL code is linked
+   to an aplication (normal program, APP) at run-time, in the
+   calculator.
+   To compile a DLL use the command line option -d.
+   A DLL has a diferent format from an APP. It doesn't have to
+   have main(), it's just a collection of functions and data.
+   The DLL as mainly 3 parts: the Routine Address Table (RAT),
+   the code, and the Relocation Table (RT).
+   RAT is a table vector that has the addresses of the exported
+   functions, addresses relative to the DLL begin. Exported
+   functions are functions that you tell TISCO to include in the
+   RAT, like this:
+
+       uint sqr (uint arg) export 12
+       {  return arg * arg;  }
+
+   The 12 number is a very important number: it's the function's
+   index. It will be trough this number that the function will be
+   'found' by an APP.
+   You can have other functions in the DLL that are internal to
+   it. Just omit the 'export' part. These functions are only
+   visible inside the DLL.
+   From the APP's side, to use the DLL you must declare it, using
+   the construct dll. Assuming that dll_function belongs to DLL
+   MYFNS:
+
+      dll MYFNS {
+         uint sqr (uint arg) export 12;
+      }
+
+   After declaring the DLL, you can use the DLL functions like
+   any other functions:
+
+      void main ()  {
+         ...
+         a = sqr(a);
+         ...
+      }
+
+   The DLL declaration should be in an include file, *.H,
+   toguether with any other declarations related to the DLL,
+   like types, defines, etc.
+   This file can be included by both the DLL and the APP. From
+   the DLL's point of view, the DLL declaraction (dll ...{...})
+   is like function prototypes, allowing to use DLL exported
+   functions at a point in the source where they haven't yet been
+   implemented. The index will be ignored, the one on the
+   function's implementation is the one that counts. However,
+   remember that they must be equal, because the DLL declaration
+   will also be used in the APP.
+   From the APP's point of view, the DLL declaration informs
+   TISCO that it must load a DLL, and what are the functions and
+   function's indexes of the DLL.
+   Be aware that TISCO is case sensitive. If you put a DLL's
+   name in upper case, you will have to compile it with upper
+   case on the command line, or else the names won't match, 
+   because the TI-8x is case sensitive too.
+   If you try to run an APP for wich a DLL is missing, it will
+   give you the name of the missing DLL and return to TI-OS.
+
+   The RT (Relocation Table) is a table of addresses of word sized
+   memory locations tha need to be relocated.
+   DLLs start at PC = 0 (.org 0). When they use an absolute
+   address (I'm talking about 16 bit Z80 absolute addresses, not
+   TI's memory absolute addressing), the address will be
+   calculated relative to the DLL's begin address (0). But, when
+   we load a DLL into an APP, we don't know at wich address it
+   will be copied to. That's where the RT comes in. The RT stores
+   the DLL relative address of every DLL location that has an
+   absolute address. When the DLL is loaded, the loading code will
+   scan RT and add to each address mentioned in the RT the address
+   where the DLL was loaded.
+   Let's see an example for better understanding:
+
+    Pure DLL code in program VAR
+                  .org  0                   ADDR   CODE(hex)
+      _load_flag: cp    2                   00     FE02
+                  jp    nz, _dont_load      02     C20800 <-
+                  ld    (_flag), a          05     320900 <-
+      _dont_load: ret                       08     C9
+      _flag:      .db 0                     09     00
+  
+   Now when you load the DLL you don't know what's the address
+   it will be put in, because DLLs are copied to the end of the
+   APP, and diferent APPs have diferent termination address (they
+   have diferent sizes).
+   If the DLL has to be loaded at address, lets say, E000h, one
+   would have to alter the jp's argument and the address of
+   "ld (_flag), a". After the DLL is copied to memory, it will
+   look like ths:
+
+    Pure DLL code in asm execution area
+                  .org  0                   ADDR   CODE(hex)
+      _load_flag: cp    2                   E000   FE02
+                  jp    nz, _dont_load      E002   C20800 <-
+                  ld    (_flag), a          E005   320900 <-
+      _dont_load: ret                       E008   C9
+      _flag:      .db 0                     E009   00
+
+   Clearly this code is wrong. _flag's address isn't 0009. Now it
+   is E009. So to the jp's target address.
+   So, after loaded, the DLL code has to changed in this way:
+
+    DLL code in asm execution area, already relocated
+                  .org  0                   ADDR   CODE(hex)
+      _load_flag: cp    2                   E000   FE02
+                  jp    nz, _dont_load      E002   C208E0  <-
+                  ld    (_flag), a          E005   3209E0  <-
+      _dont_load: ret                       E008   C9
+      _flag:      .db 0                     E009   00
+
+   Compiling a DLL will generate extra labels, named relocation
+   labels (Rxxx), and will create an RT:
+
+                  .org  0                   ADDR   CODE(hex)
+      _load_flag: cp    2                   00     FE02
+      R1:         jp    nz, _dont_load      02     C20800
+      R2:         ld    (_flag), a          05     320900
+      _dont_load: ret                       08     C9
+      _flag:      .db 0                     09     00
+
+      _relocation_table:
+                  .dw    R1 +1              0A     0300
+                  .dw    R2 +1              0C     0600
+                  .dw    0 ;marks RT end    0E     0000
+
+   Now, when loading, the RT will scanned and the contents of
+   the addresses indicated there are summed to the DLL start
+   address at the asm execution area.
+   Take a look at the generated code for the examples, you will
+   see all of this, and a few more 
+   Relocation labels will be generated for every instruction
+   (that needs one) generated by TISCO, including calls to other
+   DLL functions, but not in user assembly code. If you want to
+   acess a global symbol (function, var), you must use C, or at
+   least use it to put the symbol's address in a register (trough
+   gete).
+
+   What about the APP side? How does it find the DLL function's?
+   Well, when you use a DLL function in your APP code, TISCO will
+   generate a special function, named a 'stub', with the same
+   name of the function. That stub just calls another function
+   (named Back_Patch), and has as the function index and the DLL
+   index as .db after the call. The DLL number as to do with the
+   order by each DLL was loaded; the first DLL has index 0, the
+   second has index 1 and so on. This index is used to index a
+   table that has pointers to the DLLs in memory, filled by the
+   routine that loads a DLL.
+   Here is an example of a stub
+
+     _sqr: call  Back_Patch
+           .db   0, 24   ; DLL index, function index
+
+   If you remind, sqr had index 12. In fact, to simplify the code
+   of Back_Patch, I use the double of the indexes, because these
+   indexes are going to index word tables, and so we can spare
+   instructions to multiply the index by 2.
+   Back_Patch is a very funny routine. What it does os this: it
+   will lookup the atcual function's address and will change the
+   original caller's argument to the call function, and then calls
+   the real routine.
+   To get the function's address it will consult the RAT (by the
+   way, the RT ins't loaded to memory, it stays only at the
+   program variable; that way it doesn't take precious space in
+   execution memory).
+   Lets say the real (DLL) function _sqr is at address E020h, and
+   the _sqr stub is at address D900h:
+
+      Before executing             After executing it:
+      the call code:
+       _main:                       _main:
+          ...                          ...
+          call   0D900h                call   0E020h
+          ...                          ...
+
+   Back_Patch does this. If, for example, the call to the stub was
+   inside a loop, the first time it will call the stub, but the
+   second and next times it will call the function directly, with
+   no speed penalty, has if the DLL function were defined in the
+   APP code.
+   Basically, when excution enters Back_Patch, the stack has the
+   address of the instruction next to the caller's stub, and at
+   the top it has the address of the .db (wich is the instrution
+   following the call to Back_Patch at the stub).
+   Only stubs for the used DLL functions will be generated, but
+   the entire DLL will be loaded into the execution area, even
+   if you don't use a single function.
+
+   You can see better how Back_Patch works by looking at the file
+   DLL_CODE.ASM, wich has the code of Back_Patch (TI-8x) and the
+   code to Load_DLL (TI-86 only). To compile APPs that use DLLs
+   you need to have this file in your source directory.
+
+  [NTBT: I plan to move it to the BIN\ dir, just haven't made
+     the code to go get it there, yet.]
+
+   To use DLLs on other calcs someone will have to make a Load_DLL
+   to them. I only own a TI-86 so that's the only one I know.
+
+   An APP can use more than one DLL, but DLLs can't use other DLLs.
+
+  [NTBT: it was cool to make some 'standard' DLLs with lots of
+      basic functions and routines, coded mainly in assembly for
+      speed and size, kind of a 'LIBC'. That way many programs
+      could use the functions, and they exist only once in the
+      Calc. And if everyone agreed on an API, this could even
+      be the suport for source code portability between calcs;
+      this idea goes to the encounter of the idea of making better
+      programs and of several types for the calcs, using it's
+      potencial for more than games; games, of course, or at least
+      the better ones will probably continue to be made in pure
+      asm.)
+      The index scheme permits to add new functions to DLLs
+      maintaining compatibility with older programs. All DLLs
+      should have an index 0 function with the same name of the
+      DLL, wich returns the DLL version.]
+
+   See some examples, namelly STDGUI.C. To test it, compile
+   the DLL with
+
+        ..\>tisco STDGUI.C -d -jo
+
+   and the test program GRAPH.C with
+
+        ..\>tisco TGUI.C
+
+   Then upload the two *.86P generated files into your TI-86
+   or TIEMU and run GRAPH.
+
+   Rigth now, the size penalty for using DLL, from the DLL side
+   is mainly the size of the RT, wich can grow alot. From the
+   APP side, the penalty are (rigth now) 190 bytes for routines
+   Back_Patch, Load_DLL and DLL_missing plus 5 bytes (stub) per
+   used function and around 12 bytes per DLL used.
+   The number of DLLs and exported functions per DLL is limited
+   (besides memory available) to 128 each. This limitation comes
+   from the fact that only 1 byte is used to hold the function's
+   and DLL's indexes, doubled, at the stub routines.
+
+
+  OPTIMIZATION
+   Pure TISCO generates an awful code, full of redundant pushs
+   and pops (try compiling a program with -o0). Optimization is
+   made by a pephole optimizer, mainly, and by some 'smarter'
+   routines that take out some redundant push/pop/jp.
+   The expressions generator isn't very good. The order of the
+   elements of an expression afects the quality of the code
+   generated. My advice is to keep constants all toguether at
+   the right side (like h*2-2+1 instead of 1+2*h-2).
+   A variable will be loaded into a register as many times as it
+   appears in the expression, so it's better to put it into an
+   auxiliary variable if it is a complex variable (like
+   *l->c[i].x).
+   16 bit variables generate smaller and speedy code if they are
+   global.
+   TISCO also generates better code for simple variables so,
+   avoid the complex ones.
+   The pephole optimizer is programable, but rigth now only with
+   access to the source code of TISCO. Depending on your
+   feed-back I will in the future bring the optimizer's program
+   outside, to a file, so that anyone can make is on simple
+   optimizations (by the way, the pephole optimizer searches for
+   sequences of instructions (patterns) in the code and alters
+   them to a better sequence).
+   User asm code isn't touched.
+
+
+  TISCO OUTPUT
+   TISCO output is an *.asm file. The file will have as a comment
+   the line of the source file which generated the code. The line
+   will only appear 'very correctly' if you ident well your code,
+   putting one instruction by line, like
+
+       if (i)
+          i = 0;
+       else
+          i = 1;
+
+   instead of
+
+       if (i) i = 0;      or      if (i) i = 0; else i = 1;
+       else   i = 1;
+
+   IF there exists a file named "incs.tis", TISCO will not
+   include TI-86 include files, and instead, it will copy
+   that file to the *.asm output. This allows one to change
+   the include files and use TISCO with other calcs.
+   If you want to include some text of your own in the final
+   *.asm file, you can put whatever you want in a file named
+   "extra.tis". It will be included rigth before the
+   ".org _asm_exec_ram" directive.
+   Another file, "exdata.tis" is included at the end of the
+   program data, if the file exists. In this way you can put
+   any extra special data you want. You could for example
+   include a sprite definition, let's say '_ghost', and then
+   declare 'extern uchar ghost[..];' in the C code, allowing
+   you to use the sprite in your C code.
+   These 3 mencioned files are TEXT files and are included
+   as they are, and each line must not exced 2Kb.
+
+
+  TISCO PERFORMANCE AS A COMPILER
+   TISCO is slow, compared to what it could be. For faster
+   development I used a generic data structure, a doubly linked
+   list, which I use everywhere in TISCO. As such, even when I
+   need to search for an ID, I do it in a lousy o(n) (however,
+   this doesn't mean you have to wait for a long time for TISCO
+   to finish a compile, it compiles fairly big files in a few
+   seconds in my 486DX133; it's just that it could be more to
+   the 'instantaneous' side).
+   This compiler has grow far far beyond what I have thinked to
+   it at the beggining.
+   If there's a future for him, TISCO will become much more
+   fast...
+
+
+  TISCO KNOWN BUGS...
+   If you need to use the character '%' inside strings, write
+   it with 2 '%' (%%). The strings pass through a function
+   that interprets 'printf formats'. It's not quite a bug, but
+   it's a bit annoying. To be changed...
+   Another bug is that you can't put a /*..*/ coment in a line
+   before an instruction, like "/*hello*/ i++;". To be
+   investigated.
+   The source file must end with at least ONE EMPY LINE, that
+   is, you must press ENTER after the last word/symbol in the
+   file, or else TISCO won't "see" the last token.
+
+
+  GREETINGS
+   Well, I didn't wanted to leave without giving thanks to the
+   following people:
+    Alan Bailey, for leting me use prgm86.exe from it's ASM86.
+    Steve Gordon for his wonderfull TI-86 EMU, without it it
+        would have been too much annoying to do debugging.
+        Very nice piece of soft, Steve.
+    RT&Venno (my blood brothers) and other friends for beeing
+        my real friends.
+
+
+  FOLKS...
+   Well, that's all... I hope I'm not forgetting anything. I hope
+   to ear from you (bugs, hellos, whatever), and I hope too that
+   TISCO will be usefull to you.
+   I'll be waiting your feedback...
+   
+
+
+                                         Nuno Joao
+

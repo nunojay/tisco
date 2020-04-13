@@ -1,0 +1,6 @@
+
+  See directory examples for some code.
+  There's another dir, tests, with some code that isn't
+  operational. I just packed the dir I was using so they got
+  there.
+ 

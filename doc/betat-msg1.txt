@@ -1,0 +1,25 @@
+
+  Hi there,
+  you have all accepted to test a TI C compiler: 
+  TISCO - TI Simple C Compiler version 0.0.
+  Only now I realised I forgot to tell something important in
+  the first mail, but since it was an ASM86 mailing list it
+  shouldn't be no problem: a TI-86 (86) is needed, at least to
+  test every option.
+  I asked people with some assembly skills because that will
+  be essential in understanding the code generated.
+  TISCO compiles a small set of C, with a few restrictions.
+  It compiles 'normal' programs and DLLs. For those who know
+  Turbo Pascal, TISCO will generate code with aproximated
+  quality to what TP generates in the PC.
+  Don't expect too much from it, but besides it's limitations
+  I think it has it's usefullness.
+
+  I have the compiler in a ZIP, it's a 218Kb WinZIP file.
+  You will find there the manual. Just unzip it to a ...\TISCO\
+  directory. Start by reading TISCO00.TXT.
+  Now I wait a message from each of you allowing me to send
+  you the ZIP by mail, or telling if you prefer other way,
+  or if you have given up.
+
+  Bye

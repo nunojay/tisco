@@ -1,0 +1,71 @@
+TISCO source code micro-guide
+
+Portuguese crash course :) portuguese -> english:
+
+  igual = equal                          maior = bigger/bigger than (>)
+  menor = smaller/smaller than (<)       diferente = different
+  qualquer = any                         condicao = condition
+  padrao = pattern                       operando = operand  (abrev. oper)
+  avalia = evaluate                      erro = error
+  se = if                                entao = then
+  actual = current                       e = and
+  ou = or                                posicao = position  (abreviatted pos)
+  instrucao = instruction  (abrev. instr)
+  antes = before                         depois = after
+  fonte = source                         destino = destination
+  de = of                                um = one
+  campo = field                          estrutura = struct
+  nao = no                               sim = yes
+  numero = number                        algarismo = digit
+  tabela = table                         next = proximo
+  cada = each                            tem = has
+  para = for                             ponteiro = pointer
+  gera = generate                        contem = contains
+  endereco = address                     pilha = stack
+  codigo = code                          corpo = body
+  chamar/chamada = call                  encontrado = found
+  guardar = save                         todos = all
+  final = end                            seta = arrow (->)
+  aqui = here                            sao = are
+  escrever = write                       ler = read
+  procurar = search                      novo = new
+  saida/sair = exit                      imprimir = print/write
+  deixar = let                           que = that/which
+  direita(o) = right                     esquerda(o) = left
+  lado = side                            palavra = word
+  atribuir = assign                      ha' = exists
+  sobre = about                          quando = when (abrev. qdo)
+  em/na = in                             salto = jump
+
+The main compiler module is main.c. There is tisco.c which is a launcher.
+The parsing module uses dticlex.c, the lexical analizer.
+Parsing constructs a tree representation of the C program. Then
+
+ FUNCTION             DESCRIPTION                      FILES
+ lexical analisis     Builds list of tokens            dticlex.c
+ parsing              Parses and constructs tree       parser.c, exprs.c
+ code cleaning        Unused code removal              limpeza.c
+ code generation      Converts tree to asm instr list  geraz80
+ optimization         Optimizes                        optimiz.c
+ output generation    Writes asm file from asm list    wrt_code.c
+
+Auxiliary files:
+
+ types     Almost all types used          tipos.h
+ aux       Deal with types in tipos.h     routaux.c
+ lists     Generic list code              listas.c
+
+I wanted to do a very fast develpment, so I used lists everywhere. I always
+use the same list routines in listas.c. Slow...
+
+I use the file tisco\examples\tests\teste.c and other files in the same
+directory to test the compiler.
+
+The tisco directory is the "distribution" package.
+I used DJGPP to compile.
+
+
+Good luck ;)...
+
+Nuno Joao
+Aug 2001

@@ -1,0 +1,53 @@
+
+STDV86.INC API
+
+char createv (char *name, uint creat_routine, uint total_size,
+              uint sizei, uchar mode)
+char openv (char *name)
+void closev (char vid)
+bool findv (char *name)
+void delv (char *name)
+void set_varsize (char vid, uchar size)
+char get_vartype (char vid)
+bool seekv (char vid, uint position)
+uchar getcv (char vid)
+void putcv (char vid, uchar value)
+void getblkv (char vid, char *buffer, uint blk_size)
+void putblkv (char vid, char *buffer, uint blk_size)
+void blkv (char vid, char *buffer, uint blk_size, char mode)
+void copyv (char vid_to, uint pos_to, char vid_from, uint pos_from,
+            uint size)
+
+
+
+STDIO86.INC API
+
+void clrLCD ()
+void clrScrn ()
+uchar getkey ()
+void newline ()
+void homeup ()
+void putc()
+void runindicon ()
+void runindicoff ()
+void calcOff ()        // Turns calc off (undoc)
+void pause ()          // Pauses calc as the BASIC command (undoc)
+void cursorOn ()
+void cursorOff ()
+void dispOP1 ()        // Puts OP1 on screen (undoc)
+void putc()
+
+void locate (uchar x, uchar y)
+uchar putstr (char *st)
+void vlocate (uchar x, uchar y)
+void setTextEraseBelow (bool state)
+void vputstr (char *st)
+bool check_enough_mem (uint size)
+void SetUpperAlphaLock ()
+void SetLowerAlphaLock ()
+void UnlockAlphas ()
+uchar readkey ()
+bool get_str (char x, char y, char *str, char max_char)
+
+
+
