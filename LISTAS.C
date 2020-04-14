@@ -1,4 +1,8 @@
 
+ // Generic lists
+ // See listas.h for more information.
+
+
 #include <malloc.h>
 #include <string.h>
 #include <assert.h>
@@ -27,8 +31,6 @@ void *add_ele_lst (void *lista, void *ele)
     TL(lista)->ante = TL(ele);
     return ele;
 }
-
-
 
 
 
@@ -92,7 +94,6 @@ void *del_lista (TLST *lst)
 
 
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Listas genericas, mas que alocam mem automaticamente para os dados. *
  * Cada elemento tem um ptr para os dados.                             */
@@ -143,7 +144,6 @@ void *adel_lista (TLST *lst)
     while (lst)  lst = adel_ele_lst(lst);
     return NULL;
 }
-
 
 
 
@@ -241,8 +241,6 @@ void *edel_lista (void *lst)
 
 
 
-
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void *proc_ele_lst (void *lst, void *data, int (*fp)())
@@ -289,7 +287,6 @@ void *proc_ele_elst (void *lst, void *data, int (*fp)())
      }
     return NULL;
 }
-
 
 
 void *ini_lst (void *l)
@@ -354,8 +351,6 @@ void print_elista (void *lst, void (*print_data)(void*), int NEWLINE)
     if (NEWLINE)
        printf("\n");
 }
-
-
 
 
 
@@ -429,9 +424,4 @@ main (int argc, char **argv)
     return 0;
 }
 #endif
-
-
-
-
-
 

@@ -1,7 +1,7 @@
 
   /*> exprs.c <*/
 
-  /*  As functions related with expressions.
+  /*  Has functions related with expressions.
    *  This module's exported functions are:
    *
    *    int calc_exprk (TEXPR *ex)          (calc const expressions)
@@ -19,7 +19,6 @@
 #include "rotaux.h"
 
 
-
 void Erro (int cod, char *msg);
 TPLST parse_variavel ();
 
@@ -33,6 +32,8 @@ extern ttoken lookahead;
 
 
 int calc_exprk (TEXPR *ex)
+// Evaluates 'ex' assuming that it is a constant expression and returns its value.
+// Used for example to calculate array size on their declarations.
 /* Avalia ex assumindo que e' uma expressao constante e retorna o seu valor. */
 /* Usada (por ex.) para calcular a dimensao de arrays na sua declaracao. */
 {
@@ -64,14 +65,13 @@ static int logico (TPLST *pilha);
 
 
 
-
 #define CONSTROI_OP_BIN(regra, op, op_enum)    \
         {   TEXPR  *exa, *exb;            \
             match(lookahead);             \
             exa = pop(pilha);             \
             regra(pilha);                 \
             exb = pop(pilha);             \
-           /* Se ambos os operandos forem constantes, fazer ja' a conta */  \
+           /* Se ambos os operandos forem constantes, fazer ja' a conta   (if both ooperands constat, do the calc now) */  \
             if ( (exa->oper == eKONS) && (exb->oper == eKONS) )  {      \
                if ( (exb->u.k == 0) && ((op_enum == eDIV) || (op_enum == eMOD)) )  \
                   Erro(-8, "Divide by 0");                              \
@@ -85,37 +85,38 @@ static int logico (TPLST *pilha);
 
 
 void constroi_op_bin (TPLST *pilha, int (*regra)(TPLST*), texpr op_enum)
-        {   TEXPR  *exa, *exb;
-            match(lookahead);
-            exa = pop(pilha);
-            regra(pilha);
-            exb = pop(pilha);
-           /* Se ambos os operandos forem constantes, fazer ja' a conta */
-            if ( (exa->oper == eKONS) && (exb->oper == eKONS) )  {
-               if ( (exb->u.k == 0) && ((op_enum == eDIV) || (op_enum == eMOD)) )
-                  Erro(-8, "Divide by 0");
-               switch (op_enum)   {
-                  case eADD : exa->u.k = exa->u.k + exb->u.k; break;
-                  case eSUB : exa->u.k = exa->u.k - exb->u.k; break;
-                  case eMUL : exa->u.k = exa->u.k * exb->u.k; break;
-                  case eDIV : exa->u.k = exa->u.k / exb->u.k; break;
-                  case eMOD : exa->u.k = exa->u.k % exb->u.k; break;
-                  case eAND : exa->u.k = exa->u.k & exb->u.k; break;
-                  case eOR : exa->u.k = exa->u.k | exb->u.k; break;
-                  case eXOR : exa->u.k = exa->u.k ^ exb->u.k; break;
-                  case eSHL : exa->u.k = exa->u.k << exb->u.k; break;
-                  case eSHR : exa->u.k = exa->u.k >> exb->u.k; break;
-               }
-               free(exb);
-               push(pilha, exa);
-            }
-            else
-               push( pilha, make_expr_bin(exa, exb, op_enum) );
-        }
+{   TEXPR  *exa, *exb;
+    match(lookahead);
+    exa = pop(pilha);
+    regra(pilha);
+    exb = pop(pilha);
+   /* Se ambos os operandos forem constantes, fazer ja' a conta   (if both ooperands constat, do the calc now) */
+    if ( (exa->oper == eKONS) && (exb->oper == eKONS) )  {
+       if ( (exb->u.k == 0) && ((op_enum == eDIV) || (op_enum == eMOD)) )
+          Erro(-8, "Divide by 0");
+       switch (op_enum)   {
+          case eADD : exa->u.k = exa->u.k + exb->u.k; break;
+          case eSUB : exa->u.k = exa->u.k - exb->u.k; break;
+          case eMUL : exa->u.k = exa->u.k * exb->u.k; break;
+          case eDIV : exa->u.k = exa->u.k / exb->u.k; break;
+          case eMOD : exa->u.k = exa->u.k % exb->u.k; break;
+          case eAND : exa->u.k = exa->u.k & exb->u.k; break;
+          case eOR : exa->u.k = exa->u.k | exb->u.k; break;
+          case eXOR : exa->u.k = exa->u.k ^ exb->u.k; break;
+          case eSHL : exa->u.k = exa->u.k << exb->u.k; break;
+          case eSHR : exa->u.k = exa->u.k >> exb->u.k; break;
+       }
+       free(exb);
+       push(pilha, exa);
+    }
+    else
+       push( pilha, make_expr_bin(exa, exb, op_enum) );
+}
 
 
 
 TEXPR *parse_expr ()
+// Parses an expression and builds a tree for it. Returns the tree.
 /* Efectua o parsing a uma expressao e constroi uma arvore para ela. */
 /* Retorna a arvore */
 {
@@ -147,6 +148,7 @@ static int expr (TPLST *pilha)
 	}
 }
 
+
 static int termo (TPLST *pilha)
 {
 	factor(pilha);
@@ -159,6 +161,7 @@ static int termo (TPLST *pilha)
                   constroi_op_bin(pilha, termo, eMOD); break;
 	}
 }
+
 
 static int factor (TPLST *pilha)
 {
@@ -176,6 +179,7 @@ static int factor (TPLST *pilha)
                   constroi_op_bin(pilha, factor, eSHL); break;
 	}
 }
+
 
 static int logico (TPLST *pilha)
 {
@@ -205,6 +209,7 @@ static int logico (TPLST *pilha)
 	   case '-' :
 	        match('-');  expr(pilha);
             exa = pop(pilha);
+           // If the stack's expression is a constant, negates it without creating a new expression.
            // Se a expressao na pilha for uma constante, nega-a sem
            // criar uma nova expressao.
             if (exa->oper == eKONS)
@@ -225,10 +230,6 @@ static int logico (TPLST *pilha)
 }
 
 
-
-
-
-
 TPLST parse_lista_expressoes ()
 /* Parses an expression's list, separated by ','. It is called to  *
  * parse function calls parameters. Returns a list of expressions. */
@@ -244,8 +245,4 @@ TPLST parse_lista_expressoes ()
 
     return ini_lst(le);
 }
-
-
-
-
 

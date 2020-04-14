@@ -1,4 +1,5 @@
 
+ // Generic lists
  /** Implementacao para listas */
 
 
@@ -30,17 +31,24 @@ void *add_ele_lst (void *lista, void *ele);
 
 
 void *ins_ele_lst (void *lista, void *data);
+// Append an element to a list, returning a pointer to the new element.
+// Does NOT allocate memory for the element.
+// If lista == NULL, it's a new list being created.
 /* Retorna um ponteiro para o novo elemento. Se lista = NULL */
 /* e' porque esta' a ser criada neste momento. Nao aloca mem */
 /* para data. Insere o elemento no final da lista.           */
 
 void *del_ele_lst (void *elem);
+// If elem is the head, the list can be lost.
+// Returns a pointer to the next element, or the previous if no next.
+// Doesn't free the ->data field.
 /* Se elem for o 1§ da lista pode-se perder a lista. */
 /* Retorna um ponteiro para o prox elemento, ou NULL se lst vazia. */
 /* Se o elem era o ultimo, retorna ponteiro para anterior. Nao */
 /* liberta a mem do campo data. */
 
 void *del_lista (TLST *lst);
+// Delete all elements from the list, including the ->data field.
 /* Apaga todos os elementos de uma lista, incluindo o campo data. */
 
 
@@ -52,6 +60,7 @@ void *ains_ele_lst (void *lista, void *data, int size);
 /* Insere o elemento no final da lista. */
 
 void *adel_ele_lst (void *elem);
+// Similar to del_ele_lst() but frees the ->data field.
 /* Semelhante a del_ele_lst() mas liberta a memoria do campo data. */
 
 void *adel_lista (TLST *lst);
@@ -60,6 +69,8 @@ void *adel_lista (TLST *lst);
 
 
 void *eins_ele_lst (void *lista, void *ele);
+// Append an alement to a list. It's assumed the lista type is a struct
+// starting with the 2 fields ante (previous) and prox (next).
 /* Retorna um ponteiro para o novo elemento. Assume-se que   */
 /* e' usado um tipo na forma struct { *ante, *prox, ... }.   */
 /* Isto permite nao ter a indirecao dada por data. Pode-se   */
@@ -69,6 +80,8 @@ void *eins_ele_lst (void *lista, void *ele);
 /* Nao e' alocada nenhuma memoria.                           */
 
 void *eins_ele_clst (void *lista, void *ele);
+// Insert an alement at the head of a list. It's assumed the lista type
+// is a struct starting with the 2 fields ante (previous) and prox (next).
 /* Retorna um ponteiro para o novo elemento. Assume-se que   */
 /* e' usado um tipo na forma struct { *ante, *prox, ... }.   */
 /* Isto permite nao ter a indirecao dada por data. Pode-se   */
@@ -89,6 +102,7 @@ void *edel_lista (void *lst);
 
 
 void *proc_ele_lst (void *lst, void *data, int (*fp)());
+// Search in list.
 /* Procura na lista um dado elemento que coincida com data. */
 /* data pode ser qualquer coisa, pois a interpretacao cabe  */
 /* a fp(), uma funcao de procura. E' passado 'a funcao data */
@@ -109,9 +123,11 @@ void *proc_ele_elst (void *lst, void *data, int (*fp)());
 
 
 void *ini_lst (void *l);
+// Initializes a list and return a pointer to the head element.
 /* Retorna um ponteiro para o primeiro elemento (cabeca) da lista */
 
 void *gelst (void *elem);
+// Returns the ->data field.
 /* get elem lst. Retorna o campo data. */
 
 
@@ -133,13 +149,5 @@ void print_elista (void *lst, void (*print_data)(void*), int NEWLINE);
 /* Ajuda no DEBUG. */
 
 
-
-
-
 #endif
-
-
-
-
-
 

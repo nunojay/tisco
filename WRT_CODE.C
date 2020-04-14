@@ -6,7 +6,6 @@
    */
 
 
-
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -28,7 +27,6 @@ static FILE  *fout;           // Ficheiro de saida (texto asm)    (output file (
 
 
 
-
 static void wrt (char *fmt, ...)
 {
     va_list  ap;
@@ -45,7 +43,7 @@ static void wrt (char *fmt, ...)
            case 'i' : fprintf(fout, "%i", va_arg(ap, int));      break;
            case 'u' : fprintf(fout, "%u", va_arg(ap, uint));     break;
            case 's' : fprintf(fout, va_arg(ap, char*));          break;
-           case 'o' :       // 'o' de 'opcode'
+           case 'o' :       // 'o' de 'opcode'    ('o' means 'opcode')
                 fputc('\t', fout);
                 for (ival = 0, sval = va_arg(ap, char*); *sval; sval++, ival++)
                     fputc(*sval, fout);
@@ -60,11 +58,6 @@ static void wrt (char *fmt, ...)
     }
     va_end(ap);
 }
-
-
-
-
-
 
 
 static void put_db (int n)
@@ -102,7 +95,6 @@ static write_gvars ()
 }
 
 
-
 static write_strings ()
 // Generate .db for the strings.
 /* Gera os db's necessarios para as strings */
@@ -116,7 +108,6 @@ static write_strings ()
         wrt("\t.db 0\n");
     }
 }
-
 
 
 static write_funcoes ()
@@ -386,7 +377,6 @@ static void build_routine_table ()
 }
 
 
-
 static void gen_data_relocation_labels ()
 // Generate labels for the isntructions that need relocation.
 // Gerar labels de recolocacao em instrucoes que precisem deles.
@@ -461,6 +451,8 @@ static void build_relocation_table ()
     wrt("\n ;; Relocation Table (RT) ;;\n\n");
     wrt("_relocation_table:\n");
     // Recolocar enderecos absolutos.     (relocated absolute addresses)
+    // The entire code (except user asm) is searched for labels begining by S or R,
+    // which are strings and relocation labels, and adds them to the relocation table (RT).
     // Todo o codigo (nao o user asm) e' pesquisado em busca de labels
     // comecados por 'R' ou S, que indicam labels de recolocacao e de
     // strings, e coloca-os na RT.
@@ -488,8 +480,6 @@ static void build_relocation_table ()
 }
 
 
-
-
 static void write_load_DLLs()
 {
     TDLL  *dl;
@@ -510,7 +500,6 @@ static void write_load_DLLs()
 }
 
 
-
 static void write_dll_related_vars ()
 {
     TDLL  *dl;
@@ -526,7 +515,6 @@ static void write_dll_related_vars ()
 }
 
 
-
 static void write_header ()
 {
     FILE  *fi = fopen ("incs.tis", "rt");
@@ -540,7 +528,7 @@ static void write_header ()
         "#define    0D4H      0D4h\n"
         "#define    0E8H      0E8h\n"
         "#define    0C0H      0C0h\n\n");
-  // Put TI-86 include files or other stuff
+   // Put TI-86 include files or other stuff
     if (fi != NULL)  {
        char line[2048];
        wrt(" ;; User includes\n");
@@ -566,7 +554,7 @@ static void write_header ()
     wrt(".addinstr  ADD  A     87   1 NOP 1\n");
     wrt(".addinstr  ADD  *     C6   2 NOP 1\n\n");
 
-  // Put any other stuff user wants
+   // Put any other stuff user wants
     if (fe != NULL)  {
        char line[2048];
        wrt(" ;; User extra text\n");
@@ -591,7 +579,6 @@ static void set_regs_param ()
     wrt("%o%s\n", "ld", "hl, (_asm_reg_hl)");
     wrt("%o%s\n", "ld", "(_prog_end + 6), hl");
 }
-
 
 
 static void set_regs_param_dll ()
@@ -621,8 +608,6 @@ static void set_regs_param_dll ()
     wrt("%o%s\n", "ld", "(hl), d");
     wrt("%o%s\n", "inc", "hl");
 }
-
-
 
 
 void wrt_code (TROTNUM *rn)
@@ -706,7 +691,7 @@ void wrt_code (TROTNUM *rn)
     write_gvars();
     write_dll_related_vars();
 
-  // Put any other stuff user wants
+   // Put any other stuff user wants
     if (fe != NULL)  {
        char line[2048];
        wrt("\n ;; User extra text\n");
@@ -737,8 +722,4 @@ void wrt_code (TROTNUM *rn)
 
     fclose(fout);
 }
-
-
-
-
 
