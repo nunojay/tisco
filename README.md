@@ -1,7 +1,7 @@
 # tisco
 Old z80 simple C compiler for TI based calculators.
 
-This project was developed in a month or so at the end of 1998 / begining of 1999, with focus on my TI-86.
+This project was developed in 3 or 4 months at the end of 1998, with focus on my TI-86.
 
 It was published (no source) in Jan 1999 on ticalc.org:<br/>
 https://www.ticalc.org/archives/files/fileinfo/76/7608.html
